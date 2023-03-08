@@ -10,6 +10,7 @@ class CommentAdmin(admin.ModelAdmin):
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
+    list_display = ['title', 'author', ]
     raw_id_fields = ['author', 'likes', ]
 
 
