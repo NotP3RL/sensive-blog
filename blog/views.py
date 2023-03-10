@@ -60,7 +60,7 @@ def post_detail(request, slug):
             'author': comment.author.username,
         })
 
-    related_tags = post.tags.all().annotate(posts_amount=Count('posts'))
+    related_tags = post.tags.annotate(posts_amount=Count('posts'))
 
     serialized_post = {
         'title': post.title,
@@ -103,7 +103,7 @@ def tag_filter(request, tag_title):
                              .load_author_and_tags()[:5] \
                              .fetch_with_comments_count()
 
-    related_posts = tag.posts.all() \
+    related_posts = tag.posts \
                        .load_author_and_tags()[:20] \
                        .fetch_with_comments_count()
 
