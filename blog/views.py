@@ -27,14 +27,12 @@ def serialize_tag(tag):
 def index(request):
 
     most_popular_posts = Post.objects.popular() \
-                             .prefetch_related('author') \
-                             .prefetch_related(Prefetch('tags', Tag.objects.annotate(posts_amount=Count('posts'))))[:5] \
+                             .load_author_and_tags()[:5] \
                              .fetch_with_comments_count()
 
     fresh_posts = Post.objects.annotate(comments_amount=Count('comments')) \
                       .order_by('published_at') \
-                      .prefetch_related('author') \
-                      .prefetch_related(Prefetch('tags', Tag.objects.annotate(posts_amount=Count('posts'))))
+                      .load_author_and_tags()
     most_fresh_posts = list(fresh_posts)[-5:]
 
     most_popular_tags = Tag.objects \
@@ -81,8 +79,7 @@ def post_detail(request, slug):
                            .annotate(posts_amount=Count('posts'))[:5]
 
     most_popular_posts = Post.objects.popular() \
-                             .prefetch_related('author') \
-                             .prefetch_related(Prefetch('tags', Tag.objects.annotate(posts_amount=Count('posts'))))[:5] \
+                             .load_author_and_tags()[:5] \
                              .fetch_with_comments_count()
 
     context = {
@@ -103,13 +100,11 @@ def tag_filter(request, tag_title):
                            .annotate(posts_amount=Count('posts'))[:5]
 
     most_popular_posts = Post.objects.popular() \
-                             .prefetch_related('author') \
-                             .prefetch_related(Prefetch('tags', Tag.objects.annotate(posts_amount=Count('posts'))))[:5] \
+                             .load_author_and_tags()[:5] \
                              .fetch_with_comments_count()
 
     related_posts = tag.posts.all() \
-                       .prefetch_related('author') \
-                       .prefetch_related(Prefetch('tags', Tag.objects.annotate(posts_amount=Count('posts'))))[:20] \
+                       .load_author_and_tags()[:20] \
                        .fetch_with_comments_count()
 
     context = {
